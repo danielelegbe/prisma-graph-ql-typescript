@@ -5,12 +5,26 @@ export const typeDefs = gql`
     id: Int!
     title: String!
     description: String!
+    author: User!
+    authorId: Int!
   }
 
   type User {
     id: Int!
     username: String!
     email: String!
+    posts: [Post!]!
+  }
+
+  input PostCreateInput {
+    title: String!
+    description: String!
+  }
+
+  input UserCreateInput {
+    username: String!
+    email: String!
+    posts: [PostCreateInput!]
   }
 
   type Query {
@@ -19,7 +33,7 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    createPost(title: String!, description: String!): Post
-    createUser(username: String!, email: String!): User
+    createUser(data: UserCreateInput!): User!
+    createPost(id: Int!, data: PostCreateInput!): Post!
   }
 `;

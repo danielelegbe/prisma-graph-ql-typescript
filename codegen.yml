@@ -1,6 +1,9 @@
 overwrite: true
 schema: './src/schema.ts'
 documents: null
+config:
+  contextType: ../context#Context
+  useIndexSignature: true
 generates:
   src/generated/graphql.ts:
     plugins:

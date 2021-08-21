@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { Context } from '../context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -15,25 +16,31 @@ export type Scalars = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createPost?: Maybe<Post>;
-  createUser?: Maybe<User>;
-};
-
-
-export type MutationCreatePostArgs = {
-  title: Scalars['String'];
-  description: Scalars['String'];
+  createUser: User;
+  createPost: Post;
 };
 
 
 export type MutationCreateUserArgs = {
-  username: Scalars['String'];
-  email: Scalars['String'];
+  data: UserCreateInput;
+};
+
+
+export type MutationCreatePostArgs = {
+  id: Scalars['Int'];
+  data: PostCreateInput;
 };
 
 export type Post = {
   __typename?: 'Post';
   id: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  author: User;
+  authorId: Scalars['Int'];
+};
+
+export type PostCreateInput = {
   title: Scalars['String'];
   description: Scalars['String'];
 };
@@ -49,9 +56,17 @@ export type User = {
   id: Scalars['Int'];
   username: Scalars['String'];
   email: Scalars['String'];
+  posts: Array<Post>;
 };
 
+export type UserCreateInput = {
+  username: Scalars['String'];
+  email: Scalars['String'];
+  posts?: Maybe<Array<PostCreateInput>>;
+};
 
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -119,55 +134,62 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
+export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  Post: ResolverTypeWrapper<Post>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Post: ResolverTypeWrapper<Post>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  PostCreateInput: PostCreateInput;
   Query: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
+  UserCreateInput: UserCreateInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-};
+}>;
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
+export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
-  String: Scalars['String'];
-  Post: Post;
   Int: Scalars['Int'];
+  Post: Post;
+  String: Scalars['String'];
+  PostCreateInput: PostCreateInput;
   Query: {};
   User: User;
+  UserCreateInput: UserCreateInput;
   Boolean: Scalars['Boolean'];
-};
+}>;
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'title' | 'description'>>;
-  createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'username' | 'email'>>;
-};
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'data'>>;
+  createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'id' | 'data'>>;
+}>;
 
-export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+export type PostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  author?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  authorId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getPosts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   getUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
-};
+}>;
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = Context> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
-};
+}>;
 

@@ -7,23 +7,36 @@ exports.typeDefs = apollo_server_express_1.gql `
     id: Int!
     title: String!
     description: String!
+    author: User!
+    authorId: Int!
   }
 
   type User {
     id: Int!
     username: String!
     email: String!
+    posts: [Post!]!
+  }
+
+  input PostCreateInput {
+    title: String!
+    description: String!
+  }
+
+  input UserCreateInput {
+    username: String!
+    email: String!
+    posts: [PostCreateInput!]
   }
 
   type Query {
     getPosts: [Post!]!
     getUsers: [User!]!
-    getPostsByUser(id: Int!): [Post]!
   }
 
   type Mutation {
-    createPost(title: String!, description: String!): Post
-    createUser(username: String!, email: String!): User
+    createUser(data: UserCreateInput!): User!
+    createPost(id: Int!, data: PostCreateInput!): Post!
   }
 `;
 //# sourceMappingURL=schema.js.map
